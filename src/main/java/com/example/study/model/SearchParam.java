@@ -1,5 +1,15 @@
 package com.example.study.model;
 
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+
+// lombok은 자바 생산성을 향상 시킴
+@Data
+@AllArgsConstructor //모든 매개변수를 가지는 생성자 생성
+@NoArgsConstructor  // << 기본 생성자 추가
 public class SearchParam {
 
     private String account;
@@ -8,33 +18,4 @@ public class SearchParam {
 
     // {"account":"", "email":"","page":0} json형태 데이터통신
 
-    public SearchParam(String account, String email, int page) {
-        this.account = account;
-        this.email = email;
-        this.page = page;
-    }
-
-    public String getAccount() {
-        return account;
-    }
-
-    public void setAccount(String account) {
-        this.account = account;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public int getPage() {
-        return page;
-    }
-
-    public void setPage(int page) {
-        this.page = page;
-    }
 }
