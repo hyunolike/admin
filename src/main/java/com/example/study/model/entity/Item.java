@@ -29,5 +29,4 @@ public class Item {
     @OneToMany(fetch = FetchType.LAZY,mappedBy = "item")
     private List<OrderDetail> orderDetailList;
 
-
 }
