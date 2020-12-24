@@ -8,33 +8,41 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity //order_detail 자동적으로 연결
-//@ToString(exclude = {"user","item"}) // 스택오버 방지
-@ToString(exclude = {"orderGroup","item"})
+@AllArgsConstructor
+@Data
+@Entity
+@ToString(exclude = {"itemList","category"})
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class OrderDetail {
+public class Partner {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private String status;
 
-    private LocalDateTime arrivalDate;
+    private String address;
 
-    private Integer quantity;
+    private String callCenter;
 
-    private BigDecimal totalPrice;
+    private String partnerNumber;
+
+    private String businessNumber;
+
+    private String ceoName;
+
+    private LocalDateTime registeredAt;
+
+    private LocalDateTime unregisteredAt;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -47,24 +55,14 @@ public class OrderDetail {
 
     @LastModifiedBy
     private String updatedBy;
-
-//    외래키
-//    orderdetail N : 1 item
+//    partner N : 1 categroy
     @ManyToOne
-    private Item item;
+    private Category category;
+//    private Long categoryId; //외래키 지정
 
-//    orderDetail N : 1 OrderGroup
-    @ManyToOne
-    private OrderGroup orderGroup;
+//    partner 1 : N item
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "partner")
+    private List<Item> itemList;
 
 
-
-////    orderDetail 입장에서 생각!!!
-//    // N : 1
-//    @ManyToOne
-//    private User user; //user_id
-//
-//    // N : 1
-//    @ManyToOne
-//    private Item item;
 }

@@ -1,5 +1,6 @@
 package com.example.study.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.*;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
@@ -8,33 +9,43 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Data
-@AllArgsConstructor
 @NoArgsConstructor
-@Entity //order_detail 자동적으로 연결
-//@ToString(exclude = {"user","item"}) // 스택오버 방지
-@ToString(exclude = {"orderGroup","item"})
+@AllArgsConstructor
+@Data
+@Entity
+@ToString(exclude = {"user","orderDetailList"})
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class OrderDetail {
+public class OrderGroup {
+
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) //mysql은 identity로 설정!!!
     private Long id;
 
     private String status;
 
-    private LocalDateTime arrivalDate;
+    private String orderType; //주문의 형태 => 일괄/ 개별 2가지로 나눈다
 
-    private Integer quantity;
+    private String revAddress;
+
+    private String revName;
+
+    private String paymentType; //카드결제 / 현금결제
 
     private BigDecimal totalPrice;
+
+    private Integer totalQuantity;
+
+    private LocalDateTime orderAt;
+
+    private LocalDateTime arrivalDate;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -48,23 +59,12 @@ public class OrderDetail {
     @LastModifiedBy
     private String updatedBy;
 
+//    OrderGroup N : 1 user
+    @ManyToOne
 //    외래키
-//    orderdetail N : 1 item
-    @ManyToOne
-    private Item item;
+    private User user;
 
-//    orderDetail N : 1 OrderGroup
-    @ManyToOne
-    private OrderGroup orderGroup;
-
-
-
-////    orderDetail 입장에서 생각!!!
-//    // N : 1
-//    @ManyToOne
-//    private User user; //user_id
-//
-//    // N : 1
-//    @ManyToOne
-//    private Item item;
+//    OrderGroup 1 : N OrderDetail
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orderGroup")
+    private List<OrderDetail> orderDetailList;
 }

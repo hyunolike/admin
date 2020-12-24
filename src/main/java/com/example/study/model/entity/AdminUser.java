@@ -1,6 +1,9 @@
 package com.example.study.model.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
@@ -8,33 +11,39 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-
 import javax.persistence.*;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity //order_detail 자동적으로 연결
-//@ToString(exclude = {"user","item"}) // 스택오버 방지
-@ToString(exclude = {"orderGroup","item"})
+@Data
+@Entity
 @EntityListeners(AuditingEntityListener.class)
 @Builder
 @Accessors(chain = true)
-public class OrderDetail {
+public class AdminUser {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String account;
+
+    private String password;
+
     private String status;
 
-    private LocalDateTime arrivalDate;
+    private String role;
 
-    private Integer quantity;
+    private LocalDateTime lastLoginAt;
 
-    private BigDecimal totalPrice;
+    private LocalDateTime passwordUpdatedAt;
+
+    private int loginFailCount; //기본 0으로 설정하기 위해 int 사용
+
+    private LocalDateTime registeredAt;
+
+    private LocalDateTime unregisteredAt;
 
     @CreatedDate
     private LocalDateTime createdAt;
@@ -48,23 +57,4 @@ public class OrderDetail {
     @LastModifiedBy
     private String updatedBy;
 
-//    외래키
-//    orderdetail N : 1 item
-    @ManyToOne
-    private Item item;
-
-//    orderDetail N : 1 OrderGroup
-    @ManyToOne
-    private OrderGroup orderGroup;
-
-
-
-////    orderDetail 입장에서 생각!!!
-//    // N : 1
-//    @ManyToOne
-//    private User user; //user_id
-//
-//    // N : 1
-//    @ManyToOne
-//    private Item item;
 }

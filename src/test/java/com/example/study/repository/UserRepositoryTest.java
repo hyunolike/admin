@@ -26,17 +26,34 @@ public class UserRepositoryTest extends StudyApplicationTests {
 
     @Test
     public void create(){
-        // String sql = insert into user(, , , ,) value(, , , ,);
-        User user = new User();
+        String account = "Test03";
+        String password = "Test03";
+        String status = "REGISTERED";
+        String email = "Test01@gmail.com";
+        String phoneNumber = "010-1111-3333";
+        LocalDateTime registeredAt = LocalDateTime.now();
+        LocalDateTime createdAt = LocalDateTime.now();
+        String createdBy = "AdminServer";
 
-        user.setAccount("TestUser03");
-        user.setEmail("TestUser03@gmail.com");
-        user.setPhoneNumber("010-3333-3333");
-        user.setCreatedAt(LocalDateTime.now());
-        user.setCreatedBy("Hello");
+        User user = new User();
+        user.setAccount(account);
+        user.setPassword(password);
+        user.setStatus(status);
+        user.setEmail(email);
+        user.setPhoneNumber(phoneNumber);
+        user.setRegisteredAt(registeredAt);
+
+        User u = User.builder()
+                .account(account)
+                .password(password)
+                .status(status)
+                .email(email)
+                .build();
+
 
         User newUser = userRepository.save(user);
-        System.out.println("newUser: " + newUser);
+
+        Assertions.assertNotNull(newUser);
 
     }
 
@@ -44,19 +61,35 @@ public class UserRepositoryTest extends StudyApplicationTests {
     @Transactional
     public void read(){
 
-        // select * from user where id = ?
-        Optional<User> user = userRepository.findByAccount("TestUser03");
+        User user = userRepository.findFirstByPhoneNumberOrderByIdDesc("010-1111-2222");
 
-        user.ifPresent(selectUser -> {
+//        user.setEmail().setPhoneNumber().setCreatedBy(); chaining 해서 값을 바꿔줄수 있다
 
-            selectUser.getOrderDetailList().stream().forEach(detail -> {
-                Item item = detail.getItem();
+        if(user != null){
+            user.getOrderGroupList().stream().forEach(orderGroup -> {
 
-                System.out.println(item);
+                System.out.println("----------------------주문묶음----------------------");
+                System.out.println("수령인 :" + orderGroup.getRevName());
+                System.out.println("수령지 :" + orderGroup.getRevAddress());
+                System.out.println("총 금액 :" + orderGroup.getTotalPrice());
+                System.out.println("총 수량 :" + orderGroup.getTotalQuantity());
+                System.out.println("----------------------주문상세----------------------");
+
+                orderGroup.getOrderDetailList().forEach(orderDetail -> {
+                    System.out.println("파트너사 이름:" + orderDetail.getItem().getPartner().getName());
+                    System.out.println("파트너사 카테고리:" + orderDetail.getItem().getPartner().getCategory().getTitle());
+                    System.out.println("주문 상품 :" + orderDetail.getItem().getName());
+                    System.out.println("고객센터 번호:" + orderDetail.getItem().getPartner().getCallCenter());
+                    System.out.println("주문의 상태:" + orderDetail.getStatus());
+                    System.out.println("도착예정일자:" + orderDetail.getArrivalDate());
 
 
+                });
             });
-        });
+        }
+
+        Assertions.assertNotNull(user);
+
 
     }
 
