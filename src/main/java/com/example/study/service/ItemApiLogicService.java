@@ -3,14 +3,19 @@ package com.example.study.service;
 import com.example.study.ifs.CrudInterface;
 import com.example.study.model.entity.Item;
 import com.example.study.model.network.Header;
+import com.example.study.model.network.Pagination;
 import com.example.study.model.network.request.ItemApiRequest;
 import com.example.study.model.network.response.ItemApiResponse;
 import com.example.study.repository.ItemRepository;
 import com.example.study.repository.PartnerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiResponse,Item> {
@@ -18,6 +23,9 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
 
     @Autowired
     private PartnerRepository partnerRepository;
+
+    @Autowired
+    private ItemRepository itemRepository;
 
 //    @Autowired
 //    private ItemRepository itemRepository;
@@ -40,7 +48,7 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
 
         Item newItem = baseRepository.save(item);
 
-        return response(newItem);
+        return Header.OK(response(newItem));
     }
 
     @Override
@@ -48,6 +56,7 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
 
         return baseRepository.findById(id)
                 .map(this::response)
+                .map(Header::OK)
                 .orElseGet(() -> Header.ERROR("데이터 없음"));
     }
 
@@ -72,6 +81,7 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
                 })
                 .map(newEntityItem -> baseRepository.save(newEntityItem))
                 .map(item -> response(item))
+                .map(Header::OK)
                 .orElseGet(()->Header.ERROR("데이터 없음"));
 
     }
@@ -89,8 +99,10 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
     }
 
 
-//    공통 response 부분
-    private Header<ItemApiResponse> response(Item item){
+
+
+    //    공통 response 부분
+    public ItemApiResponse response(Item item){
 
 //        String statusTitle = item.getStatus().getTitle();
 
@@ -106,7 +118,26 @@ public class ItemApiLogicService extends BaseService<ItemApiRequest,ItemApiRespo
                 .partnerId(item.getPartner().getId())
                 .build();
 
-        return Header.OK(body);
+        return body;
 
+    }
+
+    @Override
+    public Header<List<ItemApiResponse>> search(Pageable pageable) {
+//        data 생성
+        Page<Item> items = itemRepository.findAll(pageable);
+
+        List<ItemApiResponse> itemApiResponseList = items.stream()
+                .map(item -> response(item))
+                .collect(Collectors.toList());
+
+        Pagination pagination = Pagination.builder()
+                .totalPage(items.getTotalPages())
+                .totalElements(items.getTotalElements())
+                .currentPage(items.getNumber())
+                .currentElements(items.getNumberOfElements())
+                .build();
+
+        return Header.OK(itemApiResponseList,pagination);
     }
 }

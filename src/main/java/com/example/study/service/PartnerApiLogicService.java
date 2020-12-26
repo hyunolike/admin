@@ -4,9 +4,11 @@ import com.example.study.model.entity.Partner;
 import com.example.study.model.network.Header;
 import com.example.study.model.network.request.PartnerApiRequest;
 import com.example.study.model.network.response.PartnerApiResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PartnerApiLogicService extends BaseService<PartnerApiRequest, PartnerApiResponse, Partner> {
@@ -34,6 +36,8 @@ public class PartnerApiLogicService extends BaseService<PartnerApiRequest, Partn
         return null;
     }
 
+
+
     private Header<PartnerApiResponse> response(Partner partner){
 
         PartnerApiResponse body = PartnerApiResponse.builder()
@@ -53,5 +57,9 @@ public class PartnerApiLogicService extends BaseService<PartnerApiRequest, Partn
         return Header.OK(body);
 
 
+    }
+    @Override
+    public Header<List<PartnerApiResponse>> search(Pageable pageable) {
+        return null;
     }
 }
